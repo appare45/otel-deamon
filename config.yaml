@@ -1,0 +1,30 @@
+receivers:
+  hostmetrics:
+    scrapers:
+      cpu:
+      disk:
+      filesystem:
+      load:
+      memory:
+      network:
+      paging:
+
+processors:
+  resourcedetection:
+    detectors: [env, system]
+    override: true
+  batch:
+
+exporters:
+  otlp/mackerel:
+    endpoint: otlp.mackerelio.com:4317
+    compression: gzip
+    headers:
+      Mackerel-Api-Key: ${env:MACKEREL_APIKEY}
+
+service:
+  pipelines:
+    metrics:
+      receivers: [hostmetrics]
+      processors: [batch, resourcedetection]
+      exporters: [otlp/mackerel]
