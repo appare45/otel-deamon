@@ -6,6 +6,9 @@ on:
       release:
         type: boolean
         description: Will release it
+      draft:
+        type: boolean
+        description: Create draft release
 jobs:
   build:
     strategy:
@@ -28,8 +31,12 @@ jobs:
             ${{env.CARGO_HOME}}/registry/cache/
             ${{env.CARGO_HOME}}/git/db/
           key: ${{runner.os}}-${{hashFiles('./Cargo.*')}}-${{runner.arch}}-cargo
-      - name: Build
-        run: cargo build -r
+      - name: Build(macOS)
+        if: ${{runner.os}}=="macOS"
+        run: cargo build -r --target aarch64-apple-darwin
+      - name: Build(Linux)
+        if: ${{runner.os}}=="Linux"
+        run: cargo build -r --target x86_64-unknown-linux-musl
       - name: create tarball
         run: tar -cz -f otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz target/release/otel-deamon
       - name: Upload artifact
@@ -48,6 +55,7 @@ jobs:
           merge-multiple: true
       - name: Bump version and push tag
         id: tag_version
+        if: ${{!inputs.draft}}
         uses: mathieudutour/github-tag-action@v6.2
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -56,6 +64,7 @@ jobs:
         with:
           fail_on_unmatched_files: true
           tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          draft: ${{inputs.draft}}
           files: |
             otel-deamon-*
   otel-export-trace:
