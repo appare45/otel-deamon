@@ -1,0 +1,58 @@
+name: Build and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release:
+        type: boolean
+        description: Will release it
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, ubuntu-24.04]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set CARGOHOME
+        run: echo "CARGOHOME=$RUNNER_TEMP/cargo" | tee $GITHUB_ENV
+      - name: Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{env.CARGOHOME}}/.crates.toml
+            ${{env.CARGOHOME}}/.crates2.json
+            ${{env.CARGOHOME}}/bin/
+            ${{env.CARGOHOME}}/registry/index/
+            ${{env.CARGOHOME}}/registry/cache/
+            ${{env.CARGOHOME}}/git/db/
+          key: ${{runner.os}}-${{hashFiles('./Cargo.*')}}-${{runner.arch}}-cargo
+      - name: Build
+        run: cargo build -r && tar -cz -f otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz target/release/otel-deamon
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: temp-${{matrix.os}}-${{github.run_id}}
+          path: otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz
+          retention-days: 1
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{inputs.release}}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          merge-multiple: true
+      - name: Bump version and push tag
+        id: tag_version
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          fail_on_unmatched_files: true
+          tag_name: ${{ steps.tag_version.outputs.new_tag }}
+          files: |
+            otel-deamon-*
