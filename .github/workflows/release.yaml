@@ -67,6 +67,6 @@ jobs:
       - name: Export Workflow Trace
         uses: corentinmusard/otel-cicd-action@v1.11.0
         with:
-          otlpEndpoint: https://otlp-vaxila.mackerelio.com
-          otlpHeaders: Accept=*/*,${{ secrets.OTLP_HEADER }}
+          otlpEndpoint: https://otlp-vaxila.mackerelio.com/v1/traces
+          otlpHeaders: Accept=*/*,Mackerel-Api-Key${{ secrets.MACKEREL_API_KEY }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
