@@ -15,18 +15,18 @@ jobs:
     runs-on: ${{matrix.os}}
     steps:
       - uses: actions/checkout@v4
-      - name: Set CARGOHOME
-        run: echo "CARGOHOME=$RUNNER_TEMP/cargo" | tee $GITHUB_ENV
+      - name: Set CARGO_HOME
+        run: mkdir $RUNNER_TEMP/cargo && echo "CARGO_HOME=$RUNNER_TEMP/cargo" | tee $GITHUB_ENV
       - name: Cache
         uses: actions/cache@v4
         with:
           path: |
-            ${{env.CARGOHOME}}/.crates.toml
-            ${{env.CARGOHOME}}/.crates2.json
-            ${{env.CARGOHOME}}/bin/
-            ${{env.CARGOHOME}}/registry/index/
-            ${{env.CARGOHOME}}/registry/cache/
-            ${{env.CARGOHOME}}/git/db/
+            ${{env.CARGO_HOME}}/.crates.toml
+            ${{env.CARGO_HOME}}/.crates2.json
+            ${{env.CARGO_HOME}}/bin/
+            ${{env.CARGO_HOME}}/registry/index/
+            ${{env.CARGO_HOME}}/registry/cache/
+            ${{env.CARGO_HOME}}/git/db/
           key: ${{runner.os}}-${{hashFiles('./Cargo.*')}}-${{runner.arch}}-cargo
       - name: Build
         run: cargo build -r && tar -cz -f otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz target/release/otel-deamon
