@@ -29,7 +29,9 @@ jobs:
             ${{env.CARGO_HOME}}/git/db/
           key: ${{runner.os}}-${{hashFiles('./Cargo.*')}}-${{runner.arch}}-cargo
       - name: Build
-        run: cargo build -r && tar -cz -f otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz target/release/otel-deamon
+        run: cargo build -r
+      - name: create tarball
+        run: tar -cz -f otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz target/release/otel-deamon
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -63,8 +65,8 @@ jobs:
     needs: [build, release] # must run when all jobs are complete
     steps:
       - name: Export Workflow Trace
-        uses: inception-health/otel-export-trace-action@latest
+        uses: corentinmusard/otel-cicd-action@v1.11.0
         with:
           otlpEndpoint: https://otlp-vaxila.mackerelio.com
-          otlpHeaders: ${{ secrets.OTLP_HEADER }}
+          otlpHeaders: Accept=*/*,${{ secrets.OTLP_HEADER }}
           githubToken: ${{ secrets.GITHUB_TOKEN }}
