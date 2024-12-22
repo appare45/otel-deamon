@@ -52,7 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: temp-${{matrix.os}}-${{github.run_id}}
-          path: otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz
+          path: otel-deamon-${{matrix.target}}.tar.gz
           retention-days: 1
   release:
     runs-on: ubuntu-latest
