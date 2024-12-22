@@ -51,7 +51,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: temp-${{matrix.os}}-${{github.run_id}}
+          name: temp-${{matrix.os}}-${{github.run_id}}-${{matrix.target}}
           path: otel-deamon-${{matrix.target}}.tar.gz
           retention-days: 1
   release:
