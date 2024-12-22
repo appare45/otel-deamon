@@ -36,7 +36,7 @@ jobs:
         run: cargo build -r --target aarch64-apple-darwin
       - name: Build(Linux)
         if: ${{runner.os=='Linux'}}
-        run: cargo build -r --target x86_64-unknown-linux-musl
+        run: rustup target add x86_64-unknown-linux-musl && cargo build -r --target x86_64-unknown-linux-musl
       - name: create tarball
         run: tar -cz -f otel-deamon-${{runner.os}}-${{runner.arch}}.tar.gz target/release/otel-deamon
       - name: Upload artifact
