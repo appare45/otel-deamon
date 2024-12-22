@@ -43,10 +43,7 @@ jobs:
         run: rustup target add ${{matrix.target}}
       - name: Set up OpenSSL
         if: ${{runner.os=='Linux'}}
-        run: sudo apt-get install -y openssl
-      - name: Set OPENSSL_DIR environment variable
-        if: ${{runner.os=='Linux'}}
-        run: echo OPENSSL_DIR=/usr/lib/ssl >> $GITHUB_ENV
+        run: apt-get install -y pkg-config libssl-dev
       - name: Build
         run: cargo build -r --target ${{matrix.target}}
       - name: create tarball
