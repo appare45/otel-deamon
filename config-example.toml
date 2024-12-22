@@ -1,0 +1,5 @@
+binary_name = 'my-otel-collector-macos-14'
+repo = 'https://github.com/appare45/my-otel-collector'
+config_path='./config.yaml'
+[resource]
+service_name='macosprivate'
