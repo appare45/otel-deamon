@@ -83,7 +83,7 @@ jobs:
     needs: [build, release] # must run when all jobs are complete
     steps:
       - name: Export Workflow Trace
-        uses: corentinmusard/otel-cicd-action@v1.11.0
+        uses: corentinmusard/otel-cicd-action@v1.13.2
         with:
           otlpEndpoint: https://otlp-vaxila.mackerelio.com/v1/traces
           otlpHeaders: Accept=*/*,Mackerel-Api-Key=${{ secrets.MACKEREL_API_KEY }}
